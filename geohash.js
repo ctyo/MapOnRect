@@ -1,4 +1,6 @@
-
+/**
+ * 初期化
+ */
 var ymap = new Y.Map("map", {
     "configure": {
         "dragging": true,
@@ -8,14 +10,18 @@ var ymap = new Y.Map("map", {
         "scrollWheelZoom": true
     }
 });
-ymap.drawMap(new Y.LatLng(35.66572, 139.73100), 17, Y.LayerSetId.NORMAL);
 
-
+/**
+ * いろいろかくよ
+ * @class CanvasLayer
+ * @extends {Y.Layer}
+ */
 class CanvasLayer extends Y.Layer {
     constructor(targetid) {
         super();
         self.targetid_ = targetid;
         self.canvas_ = null;
+        self.geohash_precision = 7;
     }
 
     drawLayer() {
@@ -31,75 +37,27 @@ class CanvasLayer extends Y.Layer {
             self.canvas_ = canvas;
 
             var container = this.getMapContainer(); // canvas をはめ込む親要素を取得
-            if (!container || !container[0])
+            if (!container || !container[0]) {
                 return;
+            }
             container[0].appendChild(canvas);   // canvas をはめ込む
+
+            var ymap = this.getMap();
+            var center = ymap.getCenter()
+            var geohash = Geohash.encode(center.Lat, center.Lon, self.geohash_precision);
+            var bounds = Geohash.bounds(geohash);
+            var ne = this.fromLatLngToContainerPixel(new Y.LatLng(bounds.ne.lat, bounds.ne.lon));
+            var sw = this.fromLatLngToContainerPixel(new Y.LatLng(bounds.sw.lat, bounds.sw.lon));
 
             // canvas に描画する
             var ctx = self.canvas_.getContext('2d');
-            ctx.clearRect(0, 0, self.canvas_.width, self.canvas_.height);
-
-            var w = self.canvas_.width;
-            var h = self.canvas_.height;
-            ctx.fillStyle = "yellow";
-            ctx.strokeStyle = "black";
-            ctx.beginPath();
-            ctx.arc(w / 2, h / 2, 10, 0, Math.PI * 2, false); // ○
-            ctx.fill();
-            ctx.closePath();
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.rect(0, 0, w, h);   // 枠線
-            ctx.closePath();
-            ctx.stroke();
+            ctx.strokeStyle = "red";
+            ctx.strokeRect(ne.x, ne.y, sw.x, sw.y);
+            ctx.strokeText(geohash, ne.x+5, ne.y+10);
         }
         return self;
     }
 }
-
-/*
-function CanvasLayer(targetid) {
-    this.targetid_ = targetid;
-    this.canvas_ = null;
-
-    CanvasLayer.prototype.drawLayer = function () {
-        if (this.canvas_) {
-            return;
-        }
-        var elem = document.getElementById(this.targetid_)
-        var canvas = document.createElement("canvas");
-        canvas.style.position = "absolute";
-        canvas.width = elem.offsetWidth;    // はめ込み先の幅
-        canvas.height = elem.offsetHeight;  // はめ込み先の高さ
-        this.canvas_ = canvas;
-
-        var container = this.getMapContainer(); // canvas をはめ込む親要素を取得
-        if (!container || !container[0])
-            return;
-        container[0].appendChild(canvas);   // canvas をはめ込む
-
-        // canvas に描画する
-        var ctx = this.canvas_.getContext('2d');
-        ctx.clearRect(0, 0, this.canvas_.width, this.canvas_.height);
-
-        var w = this.canvas_.width;
-        var h = this.canvas_.height;
-        ctx.fillStyle = "yellow";
-        ctx.strokeStyle = "black";
-        ctx.beginPath();
-        ctx.arc(w / 2, h / 2, 10, 0, Math.PI * 2, false); // ○
-        ctx.fill();
-        ctx.closePath();
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.rect(0, 0, w, h);   // 枠線
-        ctx.closePath();
-        ctx.stroke();
-    }
-
-    return this;
-}
-CanvasLayer.prototype = new Y.Layer();
-*/
 var geohash = new CanvasLayer('map');
 ymap.addLayer(geohash);
+ymap.drawMap(new Y.LatLng(35.66572, 139.73100), 10, Y.LayerSetId.NORMAL);
