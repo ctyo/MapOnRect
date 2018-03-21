@@ -30,9 +30,20 @@
     <div id="map"></div>
 
     <script type="text/javascript" charset="utf-8" src="https://map.yahooapis.jp/js/V1/jsapi?appid=yjdn_proxy_test06"></script>
+    <script src="./node_modules/latlon-geohash/latlon-geohash.js"></script>
+
     <script type="text/javascript">
         window.onload = function () {
-            var ymap = new Y.Map("map");
+            var ymap = new Y.Map("map", {
+                "configure": {
+                    "dragging": true,
+                    "singleClickPan": true,
+                    "doubleClickZoom": true,
+                    "continuousZoom": true,
+                    "scrollWheelZoom": true
+                }
+            });
+
             ymap.drawMap(new Y.LatLng(35.66572, 139.73100), 17, Y.LayerSetId.NORMAL);
 
 
