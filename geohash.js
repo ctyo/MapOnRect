@@ -102,6 +102,21 @@ class CanvasLayer extends Y.Layer {
 }
 
 var url = new URL(window.location);
-var canvasLayer = new CanvasLayer('map', url.searchParams.get('geohash_length'));
+if (!url.searchParams.get('l') || !url.searchParams.get('l').match(/[0-9]+/)) {
+    window.location.href = 'geohash.html?l=5';
+}
+function updateHistory (p) {
+    // TODO : 5秒待って更新
+    history.replaceState('', '', p);
+}
+ymap.bind('moveend', function () {
+    var ll = ymap.getCenter();
+    var latlon = '@'+ll.Lat+','+ll.Lon
+    p = 'geohash.html?l=' + url.searchParams.get('l') + '&p=' + latlon +'&z='+ymap.zoom;
+    updateHistory(p);
+});
+
+
+var canvasLayer = new CanvasLayer('map', url.searchParams.get('l'));
 ymap.addLayer(canvasLayer);
 ymap.drawMap(new Y.LatLng(35.66572, 139.73100), url.searchParams.get('z') || 15, Y.LayerSetId.NORMAL);
