@@ -27,3 +27,10 @@ ymap.bind('moveend', function () {
 
 ymap.addLayer(new GeohashLayer('map', url.searchParams.get('l')));
 ymap.drawMap(new Y.LatLng(35.66572, 139.73100), url.searchParams.get('z') || 15, Y.LayerSetId.NORMAL);
+document.getElementById('map').addEventListener ('ongeohashlimit', () => {
+    console.dir('fire limit');
+    var ll = ymap.getCenter();
+    var latlon = '@'+ll.Lat+','+ll.Lon
+    p = 'geohash.html?l=' + (url.searchParams.get('l')*1-1) + '&p=' + latlon +'&z='+ymap.zoom;
+    location.href = p
+});
