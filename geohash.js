@@ -23,7 +23,9 @@ ymap.bind('moveend', function () {
 });
 
 ymap.addLayer(new GeohashLayer('map', url.searchParams.get('geohash_length')));
-ymap.drawMap(new Y.LatLng(35.66572, 139.73100), url.searchParams.get('z') || 15, Y.LayerSetId.NORMAL);
+
+var p = parseP(url.searchParams.get('p'));
+ymap.drawMap(new Y.LatLng(p.Lat, p.Lon) , p.zoom , Y.LayerSetId.NORMAL);
 document.getElementById('map').addEventListener ('ongeohashlimit', () => {
     console.dir('fire limit');
     location.href = createUrl(url.searchParams.get('geohash_length')*1-1);
@@ -42,7 +44,19 @@ function createUrl(geohash_length) {
     return 'geohash.html?' +
         'geohash_length=' + geohash_length +
         '&geohash=' + Geohash.encode(ll.Lat, ll.Lon, url.searchParams.get('geohash_length')) +
-        '&p=' + latlon +
-        '&z='+ymap.zoom
+        '&p=' + latlon + ',' + ymap.zoom + 'z'
         ;
+}
+
+function parseP (p) {
+    p = p + "";
+    var m = p.match(/@([0-9.]+),([0-9.]+),([0-9]+)z/);
+    if (m === null) {
+        m = {};
+    }
+    return {
+        Lat : m[1] || 35.171962,
+        Lon : m[2] || 136.8817322,
+        zoom : m[3] || 13
+    }
 }
