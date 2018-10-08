@@ -32,7 +32,7 @@ class GeohashLayer extends Y.BlankMapLayer {
         if (!self.bindClick) {
             self.bindClick = true;
             this.map.bind('click',  (ll) => {
-                var geohash = Geohash.encode(ll.Lat, ll.Lon, url.searchParams.get('l')*1+1);
+                var geohash = Geohash.encode(ll.Lat, ll.Lon, url.searchParams.get('geohash_length')*1+1);
                 console.log(geohash);
                 var bounds = Geohash.bounds(geohash);
                 var ne = this.map.fromLatLngToContainerPixel(new Y.LatLng(bounds.ne.lat, bounds.ne.lon));
