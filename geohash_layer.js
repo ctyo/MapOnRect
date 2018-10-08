@@ -13,6 +13,7 @@ class GeohashLayer extends Y.BlankMapLayer {
         self.geohash_precision = parseInt(geohash_precision) || 4;
         self.geohashArray = new Array();
         self.map = null;
+        self.bindClick = false;
 
         window.addEventListener('resize', () => {
             this.fitSize();
@@ -28,9 +29,26 @@ class GeohashLayer extends Y.BlankMapLayer {
     }
 
     createCanvas () {
+        if (!self.bindClick) {
+            self.bindClick = true;
+            this.map.bind('click',  (ll) => {
+                var geohash = Geohash.encode(ll.Lat, ll.Lon, url.searchParams.get('l')*1+1);
+                console.log(geohash);
+                var bounds = Geohash.bounds(geohash);
+                var ne = this.map.fromLatLngToContainerPixel(new Y.LatLng(bounds.ne.lat, bounds.ne.lon));
+                var sw = this.map.fromLatLngToContainerPixel(new Y.LatLng(bounds.sw.lat, bounds.sw.lon));
+                // canvas に描画する
+                var ctx = self.canvas_.getContext('2d');
+                ctx.strokeStyle = "red";
+                ctx.strokeRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
+                ctx.strokeText(geohash, sw.x + 5, ne.y + 15);
+            });
+        }
+
         if (self.canvas_) {
             self.canvas_.remove();
             self.geohashArray = new Array();
+            this.map.unbind('click');
         }
         var canvas = document.createElement("canvas");
         canvas.style.position = "fixed";

@@ -1,7 +1,7 @@
 var ymap = new Y.Map("map", {
     "configure": {
         "dragging": true,
-        "singleClickPan": true,
+        "singleClickPan": false,
         "doubleClickZoom": true,
         "continuousZoom": true,
         "scrollWheelZoom": true
