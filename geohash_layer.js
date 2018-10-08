@@ -13,6 +13,11 @@ class GeohashLayer extends Y.BlankMapLayer {
         self.geohash_precision = parseInt(geohash_precision) || 4;
         self.geohashArray = new Array();
         self.map = null;
+
+        window.addEventListener('resize', () => {
+            this.fitSize();
+            this.drawLayer();
+        });
     }
 
     fitSize () {
@@ -60,6 +65,7 @@ class GeohashLayer extends Y.BlankMapLayer {
             var ctx = self.canvas_.getContext('2d');
             ctx.strokeStyle = "red";
             ctx.strokeRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
+
             ctx.strokeText(geohash, sw.x + 5, ne.y + 15);
         }
 

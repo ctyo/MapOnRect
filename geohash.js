@@ -34,3 +34,6 @@ document.getElementById('map').addEventListener ('ongeohashlimit', () => {
     p = 'geohash.html?l=' + (url.searchParams.get('l')*1-1) + '&p=' + latlon +'&z='+ymap.zoom;
     location.href = p
 });
+window.addEventListener('resize', () => {
+    ymap.updateSize();
+});
