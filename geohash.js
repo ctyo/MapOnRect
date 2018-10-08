@@ -19,21 +19,30 @@ function updateHistory (p) {
     history.replaceState('', '', p);
 }
 ymap.bind('moveend', function () {
-    var ll = ymap.getCenter();
-    var latlon = '@'+ll.Lat+','+ll.Lon
-    p = 'geohash.html?geohash_length=' + url.searchParams.get('geohash_length') + '&p=' + latlon +'&z='+ymap.zoom;
-    updateHistory(p);
+    updateHistory(createUrl());
 });
 
 ymap.addLayer(new GeohashLayer('map', url.searchParams.get('geohash_length')));
 ymap.drawMap(new Y.LatLng(35.66572, 139.73100), url.searchParams.get('z') || 15, Y.LayerSetId.NORMAL);
 document.getElementById('map').addEventListener ('ongeohashlimit', () => {
     console.dir('fire limit');
-    var ll = ymap.getCenter();
-    var latlon = '@'+ll.Lat+','+ll.Lon
-    p = 'geohash.html?geohash_length=' + (url.searchParams.get('geohash_length')*1-1) + '&p=' + latlon +'&z='+ymap.zoom;
-    location.href = p
+    location.href = createUrl(url.searchParams.get('geohash_length')*1-1);
 });
 window.addEventListener('resize', () => {
     ymap.updateSize();
 });
+
+function createUrl(geohash_length) {
+    if (!geohash_length) {
+        geohash_length = url.searchParams.get('geohash_length');
+    }
+
+    var ll = ymap.getCenter();
+    var latlon = '@'+ll.Lat+','+ll.Lon
+    return 'geohash.html?' +
+        'geohash_length=' + geohash_length +
+        '&geohash=' + Geohash.encode(ll.Lat, ll.Lon, url.searchParams.get('geohash_length')) +
+        '&p=' + latlon +
+        '&z='+ymap.zoom
+        ;
+}
