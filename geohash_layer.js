@@ -14,7 +14,6 @@ class GeohashLayer extends Y.BlankMapLayer {
         self.geohashArray = new Array();
         self.map = null;
         self.bindClick = false;
-        self.isEvenNum = false;
 
         window.addEventListener('resize', () => {
             this.fitSize();
@@ -82,17 +81,9 @@ class GeohashLayer extends Y.BlankMapLayer {
             var sw = that.fromLatLngToContainerPixel(new Y.LatLng(bounds.sw.lat, bounds.sw.lon));
             // canvas に描画する
             var ctx = self.canvas_.getContext('2d');
-            if (self.isEvenNum) {
-                ctx.strokeStyle = "white";
-                ctx.fillStyle = "rgba(255,0,0,0.5)";
-                self.isEvenNum = false;
-            } else {
-                ctx.strokeStyle = "red";
-                ctx.fillStyle = "rgba(255,255,255,0.5)";
-                self.isEvenNum = true;
-            }
-
-            //ctx.strokeRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
+            ctx.strokeStyle = "white";
+            ctx.fillStyle = geohash.geohashToRGB(0.5);//"rgba(255,0,0,0.5)";
+            ctx.strokeRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
             ctx.fillRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
 
             ctx.strokeText(geohash, sw.x + 5, ne.y + 15);
