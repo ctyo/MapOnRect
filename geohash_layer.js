@@ -39,9 +39,9 @@ class GeohashLayer extends Y.BlankMapLayer {
                 var sw = this.map.fromLatLngToContainerPixel(new Y.LatLng(bounds.sw.lat, bounds.sw.lon));
                 // canvas に描画する
                 var ctx = self.canvas_.getContext('2d');
-                ctx.strokeStyle = "red";
-                ctx.strokeRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
-                ctx.strokeText(geohash, sw.x + 5, ne.y + 15);
+                //ctx.strokeStyle = "red";
+                //ctx.strokeRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
+                //ctx.strokeText(geohash, sw.x + 5, ne.y + 15);
             });
         }
 
@@ -81,8 +81,10 @@ class GeohashLayer extends Y.BlankMapLayer {
             var sw = that.fromLatLngToContainerPixel(new Y.LatLng(bounds.sw.lat, bounds.sw.lon));
             // canvas に描画する
             var ctx = self.canvas_.getContext('2d');
-            ctx.strokeStyle = "red";
+            ctx.strokeStyle = "white";
+            ctx.fillStyle = geohash.geohashToRGB(0.5);//"rgba(255,0,0,0.5)";
             ctx.strokeRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
+            ctx.fillRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
 
             ctx.strokeText(geohash, sw.x + 5, ne.y + 15);
         }
