@@ -27,9 +27,11 @@ String.prototype.geohashToRGB = function (alpha) {
     r = toRGBNumber(this[0]);
     g = toRGBNumber(this[1] || 0);
     b = toRGBNumber(this[2] || 0);
-
+    r2 =toRGBNumber(this[3] || 0);
+    g2 =toRGBNumber(this[4] || 0);
+    b2 =toRGBNumber(this[5] || 0);
     if (alpha) {
-        return 'rgba(' + parseInt(r) + ',' + parseInt(g) + ',' + parseInt(b) + ',' + alpha + ')';
+        return 'rgba(' + numberToRGBNumber(r+r2) + ',' + numberToRGBNumber(g+g2) + ',' + numberToRGBNumber(b+b2) + ',' + alpha + ')';
     }
     return 'rgb(' + r + ',' + g + ',' + 'b' + ')';
 }
