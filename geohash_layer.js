@@ -79,17 +79,18 @@ class GeohashLayer extends Y.BlankMapLayer {
             var bounds = Geohash.bounds(geohash);
             var ne = that.fromLatLngToContainerPixel(new Y.LatLng(bounds.ne.lat, bounds.ne.lon));
             var sw = that.fromLatLngToContainerPixel(new Y.LatLng(bounds.sw.lat, bounds.sw.lon));
+
             // canvas に描画する
             var ctx = self.canvas_.getContext('2d');
             ctx.strokeStyle = "white";
-            ctx.fillStyle = geohash.geohashToRGB(0.5);//"rgba(255,0,0,0.5)";
+            ctx.fillStyle = geohash.geohashToRGB(0.6);//"rgba(255,0,0,0.5)";
             ctx.strokeRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
             ctx.fillRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
 
             ctx.strokeText(geohash, sw.x + 5, ne.y + 15);
         }
 
-        var limit = 300;
+        var limit = 500;
         var fillGeohash = function (geohash) {
             // 描画済みか確認
             if (self.geohashArray.includes(geohash)) {
@@ -106,20 +107,21 @@ class GeohashLayer extends Y.BlankMapLayer {
 
             // 描画エリア内か確認
             var bounds = Geohash.bounds(geohash);
+            var ybounds= new Y.LatLngBounds(new Y.LatLng(bounds.sw.lat, bounds.sw.lon), new Y.LatLng(bounds.ne.lat, bounds.ne.lon));
             var ymap = that.getMap();
             var map_bounds = ymap.getBounds();
-            if (!(
-                map_bounds.containsLatLng(new Y.LatLng(bounds.ne.lat, bounds.ne.lon)) || // 北東
-                map_bounds.containsLatLng(new Y.LatLng(bounds.sw.lat, bounds.ne.lon)) || // 北西
-                map_bounds.containsLatLng(new Y.LatLng(bounds.sw.lat, bounds.sw.lon)) || // 南西
-                map_bounds.containsLatLng(new Y.LatLng(bounds.ne.lat, bounds.sw.lon))    // 南東
-            )) {
+
+            // 日付変更線をまたぐ場合
+            //if (map_bounds.ne.Lon * map_bounds.sw.Lon < 1) {
+
+            /*} else */if (!map_bounds.containsBounds(ybounds, true)) {
                 return;
             }
 
             // 描画してリストに追加
             self.geohashArray.push(geohash);
             strokeGeohash(geohash);
+            //console.log('storoke : ' + geohash);
 
             var neighbours = Geohash.neighbours(geohash);
             for (var angle in neighbours) {

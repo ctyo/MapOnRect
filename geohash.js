@@ -18,8 +18,24 @@ function updateHistory (p) {
     // TODO : 5秒待って更新
     history.replaceState('', '', p);
 }
+
+document.getElementById('geohash').addEventListener('change', function () {
+    var center = Geohash.decode(this.value);
+    ymap.drawMap(new Y.LatLng(center.lat, center.lon));
+});
+document.getElementById('geohash_length').addEventListener('change', function () {
+    window.location.href = createUrl(this.value);
+});
 ymap.bind('moveend', function () {
     updateHistory(createUrl());
+
+    var url = new URL(window.location);
+    document.getElementById('geohash').value = url.searchParams.get('geohash');
+    document.getElementById('geohash').size = url.searchParams.get('geohash').length;
+    document.getElementById('geohash_length').value = url.searchParams.get('geohash_length');
+    document.getElementById('geohash_length').size = url.searchParams.get('geohash_length').length;
+    document.getElementById('position').value = url.searchParams.get('p');
+    document.getElementById('position').size = url.searchParams.get('p').length+5;
 });
 
 ymap.addLayer(new GeohashLayer('map', url.searchParams.get('geohash_length')));
