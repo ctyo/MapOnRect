@@ -38,10 +38,12 @@ ymap.bind('moveend', function () {
     document.getElementById('position').size = url.searchParams.get('p').length+5;
 });
 
-var _alias = url.searchParams.get('alias').split(',').map(p=>{return p.split(':')});
 var alias = {};
-for (var i=0; i<_alias.length; i++) {
-    alias[_alias[i][0]] = _alias[i][1];
+if (url.searchParams.get('alias')) {
+    var _alias = url.searchParams.get('alias').split(',').map(p=>{return p.split(':')});
+    for (var i=0; i<_alias.length; i++) {
+        alias[_alias[i][0]] = _alias[i][1];
+    }
 }
 
 ymap.addLayer(new GeohashLayer('map', url.searchParams.get('geohash_length'), alias));
