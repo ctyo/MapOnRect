@@ -5,7 +5,7 @@
  */
 
 class GeohashLayer extends Y.BlankMapLayer {
-    constructor(targetid, geohash_precision) {
+    constructor(targetid, geohash_precision, alias_text) {
         super();
         self.targetid_ = targetid;
         self.parentDom = document.getElementById(self.targetid_);
@@ -14,6 +14,8 @@ class GeohashLayer extends Y.BlankMapLayer {
         self.geohashArray = new Array();
         self.map = null;
         self.bindClick = false;
+        self.alias_text = alias_text;
+        console.dir(alias_text);
 
         window.addEventListener('resize', () => {
             this.fitSize();
@@ -88,6 +90,11 @@ class GeohashLayer extends Y.BlankMapLayer {
             ctx.fillRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
 
             ctx.strokeText(geohash, sw.x + 5, ne.y + 15);
+
+            // エイリアス設定があれば表示
+            if (alias_text && alias_text[geohash]) {
+                ctx.strokeText(alias_text[geohash], (sw.x + ne.x) / 2 - 10, (sw.y + ne.y) / 2);
+            }
         }
 
         var limit = 500;
