@@ -39,14 +39,29 @@ ymap.bind('moveend', function () {
 });
 
 var alias = {};
+var is_num = true;
+var max_num = 0;
 if (url.searchParams.get('alias')) {
     var _alias = url.searchParams.get('alias').split(',').map(p=>{return p.split(':')});
     for (var i=0; i<_alias.length; i++) {
         alias[_alias[i][0]] = _alias[i][1];
     }
+
+    // エイリアス設定があれば表示
+    var max_num = 0;
+    var is_num = new RegExp(/^[+-]?[0-9]+$/);
+    for (var a in alias) {
+        if (!is_num.test(alias[a])) {
+            is_num = false;
+        } else {
+            if (max_num < alias[a]) {
+                max_num = alias[a] * 1;
+            }
+        }
+    }
 }
 
-ymap.addLayer(new GeohashLayer('map', url.searchParams.get('geohash_length'), alias));
+ymap.addLayer(new GeohashLayer('map', url.searchParams.get('geohash_length'), { alias : alias, is_num : is_num, max_num : max_num}));
 
 var p = parseP(url.searchParams.get('p'));
 ymap.drawMap(new Y.LatLng(p.Lat, p.Lon) , p.zoom , Y.LayerSetId.NORMAL);

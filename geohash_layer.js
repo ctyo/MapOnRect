@@ -5,7 +5,7 @@
  */
 
 class GeohashLayer extends Y.BlankMapLayer {
-    constructor(targetid, geohash_precision, alias_text) {
+    constructor(targetid, geohash_precision, options) {
         super();
         self.targetid_ = targetid;
         self.parentDom = document.getElementById(self.targetid_);
@@ -14,8 +14,9 @@ class GeohashLayer extends Y.BlankMapLayer {
         self.geohashArray = new Array();
         self.map = null;
         self.bindClick = false;
-        self.alias_text = alias_text;
-        console.dir(alias_text);
+        self.alias_text = options.alias;
+        self.is_num = options.is_num || false;
+        self.max_num = options.max_num|| 0;
 
         window.addEventListener('resize', () => {
             this.fitSize();
@@ -78,6 +79,7 @@ class GeohashLayer extends Y.BlankMapLayer {
 
 
         var strokeGeohash = function (geohash) {
+            var is_drawed = false;
             var bounds = Geohash.bounds(geohash);
             var ne = that.fromLatLngToContainerPixel(new Y.LatLng(bounds.ne.lat, bounds.ne.lon));
             var sw = that.fromLatLngToContainerPixel(new Y.LatLng(bounds.sw.lat, bounds.sw.lon));
@@ -85,15 +87,41 @@ class GeohashLayer extends Y.BlankMapLayer {
             // canvas に描画する
             var ctx = self.canvas_.getContext('2d');
             ctx.strokeStyle = "white";
-            ctx.fillStyle = geohash.geohashToRGB(0.6);//"rgba(255,0,0,0.5)";
-            ctx.strokeRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
-            ctx.fillRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
 
-            ctx.strokeText(geohash, sw.x + 5, ne.y + 15);
+            if (!self.is_num) {
+                ctx.fillStyle = geohash.geohashToRGB(0.6);
+                ctx.strokeRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
+                ctx.fillRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
+                ctx.strokeText(geohash, sw.x + 5, ne.y + 15);
+                is_drawed = true;
+            }
 
             // エイリアス設定があれば表示
             if (alias_text && alias_text[geohash]) {
+                if (self.is_num) {
+                    var alias_color = 255 - (255 * (alias_text[geohash] / self.max_num));
+                    ctx.fillStyle = "rgba(255," + alias_color + ",0,0.5)";
+                } else {
+                    ctx.fillStyle = geohash.geohashToRGB(0.6);
+                }
+                ctx.strokeRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
+                ctx.fillRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
                 ctx.strokeText(alias_text[geohash], (sw.x + ne.x) / 2 - 10, (sw.y + ne.y) / 2);
+                ctx.strokeText(geohash, sw.x + 5, ne.y + 15);
+                is_drawed = true;
+            }
+
+            if (!is_drawed) {
+                ctx.strokeStyle = "black";
+                if (Object.keys(alias_text).length !==0) {
+                    ctx.fillStyle = "rgba(0,0,0,0.2)";
+                } else {
+                    ctx.fillStyle = geohash.geohashToRGB(0.6);
+                }
+
+                ctx.strokeRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
+                ctx.fillRect(sw.x, ne.y, ne.x - sw.x, sw.y - ne.y);
+                ctx.strokeText(geohash, sw.x + 5, ne.y + 15);
             }
         }
 
